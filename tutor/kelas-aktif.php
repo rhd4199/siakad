@@ -32,6 +32,17 @@ ob_start();
             </div>
             <div>
                 <div class="extra-small text-muted text-uppercase">Kelas Live</div>
+                <div class="fs-4 fw-semibold">3</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="p-3 rounded-3 bg-white border-0 shadow-sm d-flex align-items-center gap-3">
+            <div class="app-summary-icon bg-danger-subtle text-danger">
+                <i class="bi bi-stopwatch"></i>
+            </div>
+            <div>
+                <div class="extra-small text-muted text-uppercase">Ujian Aktif</div>
                 <div class="fs-4 fw-semibold">1</div>
             </div>
         </div>
@@ -43,16 +54,34 @@ ob_start();
             </div>
             <div>
                 <div class="extra-small text-muted text-uppercase">Hadir</div>
-                <div class="fs-4 fw-semibold">12/15</div>
+                <div class="fs-4 fw-semibold">38/45</div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row g-3">
-    <!-- KOLOM KIRI: LIST KELAS AKTIF -->
+    <!-- KOLOM KIRI: LIST KELAS & UJIAN AKTIF -->
     <div class="col-lg-8">
-        <div class="card border-0 shadow-sm h-100">
+        
+        <!-- ALERT: ACTIVE EXAM -->
+        <div class="alert alert-light border-start border-4 border-danger shadow-sm rounded-3 mb-4 d-flex align-items-center justify-content-between p-3" role="alert">
+            <div class="d-flex align-items-center gap-3">
+                <div class="spinner-grow text-danger spinner-grow-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-danger">Ujian Sedang Berlangsung</h6>
+                    <div class="small text-muted">Ujian Akhir Semester - Operator Komputer</div>
+                </div>
+            </div>
+            <a href="ujian-aktif.php" class="btn btn-sm btn-danger rounded-pill px-3">
+                <i class="bi bi-eye me-1"></i> Monitor Ujian
+            </a>
+        </div>
+
+        <!-- ACTIVE CLASS CARD 1 -->
+        <div class="card border-0 shadow-sm mb-3">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
@@ -96,6 +125,114 @@ ob_start();
 
                 <div class="d-flex gap-2">
                     <a href="<?= $baseUrl . $roleBasePath ?>/kelas-detail.php?id=1" class="btn btn-primary btn-sm">
+                        <i class="bi bi-door-open me-1"></i> Masuk Kelas
+                    </a>
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalQrAbsen">
+                        <i class="bi bi-qr-code-scan me-1"></i> Buka Absen QR
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE CLASS CARD 2 -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="badge bg-success-subtle text-success mb-2">
+                            <i class="bi bi-circle-fill small me-1"></i> Sedang Berlangsung
+                        </span>
+                        <h5 class="fw-semibold mb-1">Digital Marketing - DM-02</h5>
+                        <div class="text-muted small">
+                            <i class="bi bi-clock me-1"></i> 09.00 - 11.00 WIB
+                            <span class="mx-1">•</span>
+                            <i class="bi bi-geo-alt me-1"></i> Lab Multimedia
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Detail Kelas</a></li>
+                            <li><a class="dropdown-item" href="#">Absensi</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="fw-medium">Progres Materi</span>
+                                <span>Pertemuan 2 dari 8</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        Materi hari ini: <strong>Strategi Konten Instagram & TikTok</strong>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="<?= $baseUrl . $roleBasePath ?>/kelas-detail.php?id=2" class="btn btn-primary btn-sm">
+                        <i class="bi bi-door-open me-1"></i> Masuk Kelas
+                    </a>
+                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalQrAbsen">
+                        <i class="bi bi-qr-code-scan me-1"></i> Buka Absen QR
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE CLASS CARD 3 -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="badge bg-success-subtle text-success mb-2">
+                            <i class="bi bi-circle-fill small me-1"></i> Sedang Berlangsung
+                        </span>
+                        <h5 class="fw-semibold mb-1">Desain Grafis - DG-01</h5>
+                        <div class="text-muted small">
+                            <i class="bi bi-clock me-1"></i> 08.30 - 10.30 WIB
+                            <span class="mx-1">•</span>
+                            <i class="bi bi-geo-alt me-1"></i> Lab Desain
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Detail Kelas</a></li>
+                            <li><a class="dropdown-item" href="#">Absensi</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-3 bg-light mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="fw-medium">Progres Materi</span>
+                                <span>Pertemuan 6 dari 10</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        Materi hari ini: <strong>Manipulasi Foto dengan Photoshop</strong>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="<?= $baseUrl . $roleBasePath ?>/kelas-detail.php?id=3" class="btn btn-primary btn-sm">
                         <i class="bi bi-door-open me-1"></i> Masuk Kelas
                     </a>
                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalQrAbsen">

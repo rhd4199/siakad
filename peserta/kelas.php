@@ -3,7 +3,8 @@ require_once __DIR__ . '/../config.php';
 require_login(['peserta']);
 
 $user         = current_user();
-$title        = 'Kelas & Materi';
+$tab = $_GET['tab'] ?? 'active';
+$title = ($tab === 'completed') ? 'Riwayat Kelas' : 'Kelas & Materi';
 $currentPage  = 'kelas';
 $roleBasePath = '/peserta';
 $baseUrl      = '/siakad';
@@ -16,7 +17,7 @@ $stats = [
     ['label' => 'Jadwal Hari Ini', 'value' => 2, 'icon' => 'bi-calendar-week', 'color' => 'info'],
 ];
 
-$classes = [
+$allClasses = [
     [
         'code' => 'OM-01',
         'name' => 'Operator Komputer',
@@ -52,8 +53,29 @@ $classes = [
         'mode' => 'Praktek Langsung',
         'progress' => 0,
         'status' => 'upcoming'
+    ],
+    [
+        'code' => 'CS-03',
+        'name' => 'Customer Service Excellence',
+        'desc' => 'Teknik pelayanan pelanggan prima dan penanganan keluhan.',
+        'tutor' => 'Ratna Dewi',
+        'schedule' => 'Selesai',
+        'location' => 'Lab 2',
+        'meetings' => 5,
+        'mode' => 'Tatap Muka',
+        'progress' => 100,
+        'status' => 'completed'
     ]
 ];
+
+// Filter classes based on tab
+$classes = array_filter($allClasses, function($c) use ($tab) {
+    if ($tab === 'completed') {
+        return $c['status'] === 'completed';
+    } else {
+        return $c['status'] !== 'completed';
+    }
+});
 
 ob_start();
 ?>
@@ -80,14 +102,15 @@ ob_start();
 
 <div class="row mb-4 align-items-center">
     <div class="col-lg-8">
-        <h4 class="fw-bold mb-1">Kelas & Materi Saya</h4>
+        <h4 class="fw-bold mb-1"><?= ($tab === 'completed') ? 'Riwayat Kelas Selesai' : 'Kelas & Materi Saya' ?></h4>
         <p class="text-muted small mb-0">
-            Akses semua materi pembelajaran, video, dan tugas Anda di sini.
+            <?= ($tab === 'completed') ? 'Daftar kelas yang telah Anda selesaikan.' : 'Akses semua materi pembelajaran, video, dan tugas Anda di sini.' ?>
         </p>
     </div>
 </div>
 
 <!-- Stats Section -->
+<?php if ($tab !== 'completed'): ?>
 <div class="row g-3 mb-4">
     <?php foreach ($stats as $stat): ?>
     <div class="col-6 col-md-3">
@@ -105,6 +128,7 @@ ob_start();
     </div>
     <?php endforeach; ?>
 </div>
+<?php endif; ?>
 
 <div class="row g-4">
     <?php foreach ($classes as $class): ?>
@@ -156,9 +180,22 @@ ob_start();
                     </div>
 
                     <div class="d-grid">
-                        <a href="<?= $baseUrl . $roleBasePath ?>/kelas-detail.php?kode=<?= $class['code'] ?>" class="btn btn-outline-primary btn-sm fw-medium">
-                            Masuk Kelas <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
+                        <?php if ($class['status'] === 'completed'): ?>
+                            <button class="btn btn-secondary btn-sm fw-medium" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#classDetailModal"
+                                    data-title="<?= htmlspecialchars($class['name']) ?>"
+                                    data-desc="<?= htmlspecialchars($class['desc']) ?>"
+                                    data-tutor="<?= htmlspecialchars($class['tutor']) ?>"
+                                    data-schedule="<?= htmlspecialchars($class['schedule']) ?>"
+                                    data-progress="<?= htmlspecialchars($class['progress']) ?>">
+                                <i class="bi bi-eye me-1"></i> Detail Kelas
+                            </button>
+                        <?php else: ?>
+                            <a href="<?= $baseUrl . $roleBasePath ?>/kelas-detail.php?kode=<?= $class['code'] ?>" class="btn btn-outline-primary btn-sm fw-medium">
+                                Masuk Kelas <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -166,6 +203,80 @@ ob_start();
     </div>
     <?php endforeach; ?>
 </div>
+
+<!-- Class Detail Modal -->
+<div class="modal fade" id="classDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalClassTitle">Detail Kelas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold text-uppercase">Deskripsi</label>
+                    <p class="text-dark" id="modalClassDesc"></p>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="small text-muted fw-bold text-uppercase">Tutor</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-person-circle text-primary"></i>
+                            <span id="modalClassTutor" class="fw-medium"></span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-muted fw-bold text-uppercase">Jadwal Terakhir</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-calendar-check text-primary"></i>
+                            <span id="modalClassSchedule" class="fw-medium"></span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="small text-muted fw-bold text-uppercase">Pencapaian Akhir</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="progress flex-grow-1" style="height: 10px;">
+                                <div id="modalClassProgressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <span id="modalClassProgress" class="fw-bold text-success"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-light border mt-4 mb-0 d-flex gap-2">
+                    <i class="bi bi-info-circle text-muted"></i>
+                    <small class="text-muted">Kelas ini telah diarsipkan. Anda tidak dapat lagi mengakses materi detail, namun sertifikat tetap tersedia di menu Akun.</small>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-light w-100" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var classDetailModal = document.getElementById('classDetailModal');
+        classDetailModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            
+            var title = button.getAttribute('data-title');
+            var desc = button.getAttribute('data-desc');
+            var tutor = button.getAttribute('data-tutor');
+            var schedule = button.getAttribute('data-schedule');
+            var progress = button.getAttribute('data-progress');
+            
+            classDetailModal.querySelector('#modalClassTitle').textContent = title;
+            classDetailModal.querySelector('#modalClassDesc').textContent = desc;
+            classDetailModal.querySelector('#modalClassTutor').textContent = tutor;
+            classDetailModal.querySelector('#modalClassSchedule').textContent = schedule;
+            classDetailModal.querySelector('#modalClassProgress').textContent = progress + '%';
+            classDetailModal.querySelector('#modalClassProgressBar').style.width = progress + '%';
+        });
+    });
+</script>
 
 <?php
 $content = ob_get_clean();

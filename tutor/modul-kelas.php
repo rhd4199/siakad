@@ -172,7 +172,131 @@ ob_start();
     </div>
 </div>
 
+<!-- MODAL: CREATE MODULE -->
+<div class="modal fade" id="modalCreateModule" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold">Buat Modul Kelas Baru</h5>
+                    <p class="text-muted small mb-0">Isi informasi dasar untuk template kelas Anda.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-4">
+                <form>
+                    <div class="row g-3">
+                        <!-- Left Column: Basic Info -->
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted">Judul Modul</label>
+                                <input type="text" class="form-control" placeholder="Contoh: Digital Marketing Masterclass">
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold text-muted">Kode Modul</label>
+                                    <input type="text" class="form-control text-uppercase" placeholder="MOD-..." value="MOD-NEW-01">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold text-muted">Kategori</label>
+                                    <select class="form-select">
+                                        <option selected disabled>Pilih...</option>
+                                        <option>Office & Admin</option>
+                                        <option>Digital Marketing</option>
+                                        <option>Programming</option>
+                                        <option>Design</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted">Deskripsi Singkat</label>
+                                <textarea class="form-control" rows="4" placeholder="Jelaskan apa yang akan dipelajari siswa..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Details & Stats -->
+                        <div class="col-md-5">
+                            <div class="p-3 bg-light rounded-3 h-100 border border-light">
+                                <h6 class="fw-bold small mb-3 text-primary"><i class="bi bi-sliders me-2"></i>Pengaturan Awal</h6>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold text-muted">Level Kesulitan</label>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="form-check card-radio">
+                                            <input class="form-check-input" type="radio" name="level" id="lvlBasic" checked>
+                                            <label class="form-check-label small w-100" for="lvlBasic">
+                                                <div class="fw-medium">Basic / Pemula</div>
+                                                <div class="text-muted extra-small">Untuk yang baru belajar dari nol.</div>
+                                            </label>
+                                        </div>
+                                        <div class="form-check card-radio">
+                                            <input class="form-check-input" type="radio" name="level" id="lvlInter">
+                                            <label class="form-check-label small w-100" for="lvlInter">
+                                                <div class="fw-medium">Intermediate / Lanjutan</div>
+                                                <div class="text-muted extra-small">Butuh pengetahuan dasar sebelumnya.</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label extra-small fw-semibold text-muted">Est. Sesi</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control" value="8">
+                                            <span class="input-group-text">Sesi</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label extra-small fw-semibold text-muted">Est. Jam</label>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control" value="16">
+                                            <span class="input-group-text">Jam</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-check-lg me-1"></i> Buat Modul
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
+.card-radio {
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+.card-radio .form-check-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+.card-radio .form-check-label {
+    display: block;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    transition: all 0.2s;
+}
+.card-radio .form-check-input:checked + .form-check-label {
+    border-color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+}
 .card-hover-uplift {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }

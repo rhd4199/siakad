@@ -248,6 +248,14 @@ $baseUrl      = $baseUrl      ?? '/siakad';
                     <span>Ujian Aktif</span>
                 </a>
 
+                <a href="<?= $baseUrl . $roleBasePath ?>/penilaian-ujian.php"
+                class="nav-link app-nav-link d-flex align-items-center <?= is_active('penilaian-ujian', $currentPage) ?>">
+                    <span class="app-nav-icon">
+                        <i class="bi bi-check2-circle"></i>
+                    </span>
+                    <span>Penilaian Ujian</span>
+                </a>
+
                 <div class="app-nav-section mt-3">Arsip</div>
 
                 <a href="<?= $baseUrl . $roleBasePath ?>/arsip-kelas.php"
@@ -269,16 +277,24 @@ $baseUrl      = $baseUrl      ?? '/siakad';
 
 
             <?php if ($role === 'peserta'): ?>
-                <div class="app-nav-section mt-3">Peserta</div>
-                <a href="<?= $baseUrl . $roleBasePath ?>/kelas.php"
-                   class="nav-link app-nav-link d-flex align-items-center <?= is_active('kelas', $currentPage) ?>">
+                <?php $currentTab = $_GET['tab'] ?? 'active'; ?>
+                <div class="app-nav-section mt-3">Akademik</div>
+                <a href="<?= $baseUrl . $roleBasePath ?>/kelas.php?tab=active"
+                   class="nav-link app-nav-link d-flex align-items-center <?= ($currentPage === 'kelas' && $currentTab === 'active') ? 'active app-nav-active' : '' ?>">
                     <span class="app-nav-icon">
                         <i class="bi bi-easel"></i>
                     </span>
-                    <span>Kelas</span>
+                    <span>Kelas Saya</span>
                 </a>
-                <a href="<?= $baseUrl . $roleBasePath ?>/tugas.php"
-                   class="nav-link app-nav-link d-flex align-items-center <?= is_active('tugas', $currentPage) ?>">
+                <a href="<?= $baseUrl . $roleBasePath ?>/jadwal.php"
+                   class="nav-link app-nav-link d-flex align-items-center <?= is_active('jadwal', $currentPage) ?>">
+                    <span class="app-nav-icon">
+                        <i class="bi bi-calendar-week"></i>
+                    </span>
+                    <span>Jadwal Saya</span>
+                </a>
+                <a href="<?= $baseUrl . $roleBasePath ?>/tugas.php?tab=active"
+                   class="nav-link app-nav-link d-flex align-items-center <?= ($currentPage === 'tugas' && $currentTab === 'active') ? 'active app-nav-active' : '' ?>">
                     <span class="app-nav-icon">
                         <i class="bi bi-journal-check"></i>
                     </span>
@@ -290,6 +306,22 @@ $baseUrl      = $baseUrl      ?? '/siakad';
                         <i class="bi bi-award"></i>
                     </span>
                     <span>Raport & Sertifikat</span>
+                </a>
+
+                <div class="app-nav-section mt-3">Riwayat & Arsip</div>
+                <a href="<?= $baseUrl . $roleBasePath ?>/kelas.php?tab=completed"
+                   class="nav-link app-nav-link d-flex align-items-center <?= ($currentPage === 'kelas' && $currentTab === 'completed') ? 'active app-nav-active' : '' ?>">
+                    <span class="app-nav-icon">
+                        <i class="bi bi-archive"></i>
+                    </span>
+                    <span>Kelas Selesai</span>
+                </a>
+                <a href="<?= $baseUrl . $roleBasePath ?>/tugas.php?tab=completed"
+                   class="nav-link app-nav-link d-flex align-items-center <?= ($currentPage === 'tugas' && $currentTab === 'completed') ? 'active app-nav-active' : '' ?>">
+                    <span class="app-nav-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </span>
+                    <span>Riwayat Ujian</span>
                 </a>
 
                 <div class="app-nav-section mt-3">Akun</div>

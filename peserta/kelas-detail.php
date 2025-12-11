@@ -11,6 +11,33 @@ $roleBasePath = '/peserta';
 $baseUrl      = '/siakad';
 
 // Simulated Data
+$moduleInfo = [
+    'description' => 'Modul ini dirancang untuk memperkenalkan peserta pada dasar-dasar pengoperasian komputer, mulai dari pengenalan hardware hingga penggunaan aplikasi perkantoran dasar seperti Microsoft Office.',
+    'cover_img' => 'https://placehold.co/600x400/2563eb/ffffff?text=Operator+Komputer',
+    'general' => [
+        'videos' => [
+            [
+                'title' => 'Video Orientasi Kelas',
+                'file' => 'orientasi_ok.mp4',
+                'size' => '15 MB'
+            ]
+        ],
+        'files' => [
+            [
+                'title' => 'Silabus Lengkap',
+                'type' => 'pdf',
+                'size' => '2.5 MB'
+            ],
+            [
+                'title' => 'Tata Tertib Kelas',
+                'type' => 'pdf',
+                'size' => '500 KB'
+            ]
+        ],
+        'note' => 'Selamat datang di kelas Operator Komputer. Silakan unduh silabus dan tata tertib kelas. Video orientasi wajib ditonton sebelum memulai pertemuan pertama.'
+    ]
+];
+
 $meetings = [
     [
         'id' => 1,
@@ -22,7 +49,8 @@ $meetings = [
         'files' => [
             ['name' => 'Modul 1 - Pengenalan.pdf', 'type' => 'pdf', 'size' => '2.4 MB'],
             ['name' => 'Shortcut Keys.jpg', 'type' => 'img', 'size' => '500 KB']
-        ]
+        ],
+        'assignment' => null
     ],
     [
         'id' => 2,
@@ -33,6 +61,12 @@ $meetings = [
         'desc' => 'Memulai dokumen baru, formatting teks dasar, dan penyimpanan file.',
         'files' => [
             ['name' => 'Latihan 1 - Surat Lamaran.docx', 'type' => 'doc', 'size' => '1.1 MB']
+        ],
+        'assignment' => [
+            'title' => 'Praktik Membuat Surat Lamaran',
+            'desc' => 'Buatlah surat lamaran kerja formal menggunakan fitur formatting yang telah dipelajari. Simpan dalam format DOCX atau PDF.',
+            'deadline' => 'Besok, 23:59 WIB',
+            'status' => 'pending' // pending, submitted, graded
         ]
     ],
     [
@@ -42,7 +76,8 @@ $meetings = [
         'video_title' => '',
         'video_duration' => '',
         'desc' => 'Materi ini akan terbuka setelah Anda menyelesaikan pertemuan sebelumnya.',
-        'files' => []
+        'files' => [],
+        'assignment' => null
     ]
 ];
 
@@ -89,6 +124,9 @@ ob_start();
         border-bottom-right-radius: 0 !important;
         border-bottom-left-radius: 0 !important;
     }
+    .border-dashed {
+        border-style: dashed !important;
+    }
 </style>
 
 <div class="row mb-4">
@@ -120,6 +158,106 @@ ob_start();
                             </div>
                             <div class="mt-2 extra-small text-muted">
                                 4 dari 10 Pertemuan Selesai
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INFO & GENERAL RESOURCES SECTION -->
+<div class="row g-4 mb-5">
+    <!-- Left: Description & Info -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-info-circle me-2 text-primary"></i>Informasi Modul</h6>
+                </div>
+                <div class="ratio ratio-16x9 bg-light rounded-3 mb-3 overflow-hidden position-relative">
+                    <img src="<?= $moduleInfo['cover_img'] ?>" class="object-fit-cover">
+                </div>
+                <p class="text-muted small mb-0">
+                    <?= $moduleInfo['description'] ?>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: General Resources (Tabs) -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-collection-play me-2 text-primary"></i>Materi Umum & Catatan</h6>
+                </div>
+                <ul class="nav nav-tabs card-header-tabs" id="generalTab" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active small" data-bs-toggle="tab" data-bs-target="#gen-video">Video Umum</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link small" data-bs-toggle="tab" data-bs-target="#gen-file">File & Dokumen</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link small" data-bs-toggle="tab" data-bs-target="#gen-note">Catatan Tutor</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="generalTabContent">
+                    <!-- General Video -->
+                    <div class="tab-pane fade show active" id="gen-video">
+                        <div class="list-group list-group-flush">
+                            <?php if(empty($moduleInfo['general']['videos'])): ?>
+                                <div class="text-center py-3 text-muted small">Tidak ada video umum.</div>
+                            <?php else: ?>
+                                <?php foreach ($moduleInfo['general']['videos'] as $vid): ?>
+                                <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                    <div class="bg-light rounded p-2 text-danger">
+                                        <i class="bi bi-file-play-fill fs-4"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-medium small"><?= $vid['title'] ?></div>
+                                        <div class="text-muted extra-small">File: <?= $vid['file'] ?> (<?= $vid['size'] ?>)</div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="btn btn-sm btn-light text-primary"><i class="bi bi-play-circle me-1"></i> Tonton</a>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- General File -->
+                    <div class="tab-pane fade" id="gen-file">
+                        <div class="list-group list-group-flush">
+                            <?php if(empty($moduleInfo['general']['files'])): ?>
+                                <div class="text-center py-3 text-muted small">Tidak ada file umum.</div>
+                            <?php else: ?>
+                                <?php foreach ($moduleInfo['general']['files'] as $file): ?>
+                                <div class="list-group-item px-0 d-flex align-items-center gap-3">
+                                    <div class="bg-light rounded p-2 text-primary">
+                                        <i class="bi bi-file-earmark-text-fill fs-4"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-medium small"><?= $file['title'] ?></div>
+                                        <div class="text-muted extra-small"><?= strtoupper($file['type']) ?> • <?= $file['size'] ?></div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="btn btn-sm btn-light text-primary"><i class="bi bi-download me-1"></i> Download</a>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- General Note -->
+                    <div class="tab-pane fade" id="gen-note">
+                        <div class="bg-light-subtle rounded-3 p-3 border border-dashed">
+                            <div class="small text-dark">
+                                <?= $moduleInfo['general']['note'] ?? 'Tidak ada catatan tambahan.' ?>
                             </div>
                         </div>
                     </div>
@@ -185,9 +323,64 @@ ob_start();
                                             </div>
                                         </div>
                                         <h6 class="fw-bold mb-1">Deskripsi Materi</h6>
-                                        <p class="small text-muted mb-0">
+                                        <p class="small text-muted mb-4">
                                             <?= $meeting['desc'] ?>
                                         </p>
+
+                                        <?php if (!empty($meeting['assignment'])): ?>
+                                            <div class="card border border-warning-subtle bg-warning-subtle bg-opacity-10 shadow-sm">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                                        <div class="badge bg-warning text-dark"><i class="bi bi-star-fill me-1"></i> TUGAS</div>
+                                                        <div class="small text-muted">Deadline: <strong><?= $meeting['assignment']['deadline'] ?></strong></div>
+                                                    </div>
+                                                    <h6 class="fw-bold"><?= $meeting['assignment']['title'] ?></h6>
+                                                    <p class="small text-muted mb-3"><?= $meeting['assignment']['desc'] ?></p>
+                                                    
+                                                    <?php if ($meeting['assignment']['status'] == 'pending'): ?>
+                                                        <div id="uploadArea<?= $meeting['id'] ?>">
+                                                            <input type="file" id="fileInput<?= $meeting['id'] ?>" class="d-none" accept=".pdf,.docx,.doc" onchange="handleFileUpload(<?= $meeting['id'] ?>, this)">
+                                                            <div class="border border-dashed border-2 border-secondary rounded p-4 text-center bg-white cursor-pointer hover-bg-light transition-all" 
+                                                                 onclick="document.getElementById('fileInput<?= $meeting['id'] ?>').click()"
+                                                                 id="dropZone<?= $meeting['id'] ?>">
+                                                                <i class="bi bi-cloud-arrow-up fs-3 text-primary mb-2 d-block"></i>
+                                                                <div class="fw-bold text-dark small">Klik untuk Upload Tugas</div>
+                                                                <div class="extra-small text-muted">Format: PDF, DOCX (Max 5MB)</div>
+                                                            </div>
+                                                            
+                                                            <!-- Progress Bar (Hidden initially) -->
+                                                            <div id="uploadProgress<?= $meeting['id'] ?>" class="d-none mt-3">
+                                                                <div class="d-flex justify-content-between extra-small fw-bold text-muted mb-1">
+                                                                    <span>Mengupload...</span>
+                                                                    <span id="progressText<?= $meeting['id'] ?>">0%</span>
+                                                                </div>
+                                                                <div class="progress" style="height: 6px;">
+                                                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="progressBar<?= $meeting['id'] ?>"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Success State (Hidden initially) -->
+                                                        <div id="uploadSuccess<?= $meeting['id'] ?>" class="d-none">
+                                                            <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2">
+                                                                <i class="bi bi-check-circle-fill"></i>
+                                                                <div class="small fw-bold">Tugas berhasil dikumpulkan.</div>
+                                                            </div>
+                                                            <div class="mt-2 text-end">
+                                                                <button class="btn btn-sm btn-link text-danger text-decoration-none extra-small" onclick="resetUpload(<?= $meeting['id'] ?>)">
+                                                                    Batalkan Pengumpulan
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="alert alert-success d-flex align-items-center gap-2 mb-0 py-2">
+                                                            <i class="bi bi-check-circle-fill"></i>
+                                                            <div class="small fw-bold">Tugas berhasil dikumpulkan.</div>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="col-md-5">
                                         <div class="bg-light rounded-3 p-3 h-100">
@@ -273,6 +466,69 @@ ob_start();
         </div>
     </div>
 </div>
+
+<script>
+    function handleFileUpload(id, input) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const dropZone = document.getElementById('dropZone' + id);
+            const progressArea = document.getElementById('uploadProgress' + id);
+            const progressBar = document.getElementById('progressBar' + id);
+            const progressText = document.getElementById('progressText' + id);
+            const uploadArea = document.getElementById('uploadArea' + id);
+            const successArea = document.getElementById('uploadSuccess' + id);
+            
+            // Validate size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File terlalu besar! Maksimal 5MB.');
+                input.value = '';
+                return;
+            }
+
+            // UI Update: Hide Dropzone content partly or disable it
+            dropZone.style.opacity = '0.5';
+            dropZone.style.pointerEvents = 'none';
+            progressArea.classList.remove('d-none');
+
+            // Simulate Upload
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 5;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressText.textContent = progress + '%';
+
+                if (progress === 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        // Switch to success state
+                        uploadArea.classList.add('d-none');
+                        successArea.classList.remove('d-none');
+                        
+                        // Reset for next time (in background)
+                        progressBar.style.width = '0%';
+                        progressArea.classList.add('d-none');
+                        dropZone.style.opacity = '1';
+                        dropZone.style.pointerEvents = 'auto';
+                    }, 500);
+                }
+            }, 200);
+        }
+    }
+
+    function resetUpload(id) {
+        if (confirm('Apakah Anda yakin ingin membatalkan pengumpulan tugas ini?')) {
+            const uploadArea = document.getElementById('uploadArea' + id);
+            const successArea = document.getElementById('uploadSuccess' + id);
+            const input = document.getElementById('fileInput' + id);
+            
+            input.value = '';
+            uploadArea.classList.remove('d-none');
+            successArea.classList.add('d-none');
+        }
+    }
+</script>
 
 <?php
 $content = ob_get_clean();

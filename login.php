@@ -40,237 +40,371 @@ if (current_user()) {
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Login - SIAKAD LPK</title>
+    <title>Masuk - SIAKAD LPK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            --primary-color: #4e73df;
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            background-color: #fff;
         }
 
-        body {
+        .login-container {
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Left Side - Visual */
+        .visual-side {
+            background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+            position: relative;
             overflow: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating Shapes */
-        .shape {
-            position: absolute;
-            filter: blur(50px);
-            z-index: 0;
-            animation: float 20s infinite;
-        }
-        .shape-1 {
-            top: -10%;
-            left: -10%;
-            width: 500px;
-            height: 500px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-        }
-        .shape-2 {
-            bottom: -10%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation-delay: -5s;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(20px, 20px) rotate(10deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-
-        .login-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 420px;
-            padding: 3rem 2.5rem;
+        .visual-content {
             position: relative;
-            z-index: 1;
-            transform: translateY(0);
-            transition: transform 0.3s;
-        }
-        
-        .login-card:hover {
-            transform: translateY(-5px);
+            z-index: 2;
+            padding: 4rem;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .brand-logo {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #4e73df, #224abe);
+        /* Abstract Shapes Background */
+        .shape-blob {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 1;
+            animation: float-blob 20s infinite ease-in-out;
+        }
+        .blob-1 { width: 400px; height: 400px; top: -100px; right: -100px; }
+        .blob-2 { width: 300px; height: 300px; bottom: -50px; left: -50px; animation-delay: -5s; }
+        .blob-3 { width: 200px; height: 200px; top: 40%; left: 40%; animation-delay: -10s; background: rgba(72, 149, 239, 0.2); }
+
+        @keyframes float-blob {
+            0%, 100% { transform: translate(0, 0); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: auto;
+        }
+
+        /* Right Side - Form */
+        .form-side {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #ffffff;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-color);
             color: white;
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 20px rgba(78, 115, 223, 0.3);
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
         }
 
-        .form-floating .form-control {
-            border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.1);
-            background: rgba(255,255,255,0.5);
-        }
-        .form-floating .form-control:focus {
-            background: white;
-            box-shadow: 0 0 0 4px rgba(78, 115, 223, 0.15);
-            border-color: #4e73df;
-        }
-
-        .btn-login {
-            border-radius: 12px;
-            padding: 12px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            border: none;
-            box-shadow: 0 10px 20px rgba(78, 115, 223, 0.2);
+        .form-control {
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
+            font-size: 0.95rem;
             transition: all 0.3s;
         }
-        .btn-login:hover {
+        .form-control:focus {
+            background-color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
             transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(78, 115, 223, 0.3);
-            background: linear-gradient(135deg, #224abe 0%, #1a3a9c 100%);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .social-btn {
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            color: #333;
+            font-weight: 500;
+            padding: 0.7rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .social-btn:hover {
+            background: #f8f9fa;
+            border-color: #ccc;
         }
 
         .divider {
             display: flex;
             align-items: center;
             text-align: center;
+            color: #adb5bd;
             margin: 1.5rem 0;
-            color: #6c757d;
             font-size: 0.85rem;
         }
         .divider::before, .divider::after {
             content: '';
             flex: 1;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
         }
         .divider::before { margin-right: .5em; }
         .divider::after { margin-left: .5em; }
 
-        .demo-accounts {
-            background: rgba(255,255,255,0.5);
+        .demo-box {
+            background: #f8f9fa;
+            border: 1px dashed #dee2e6;
             border-radius: 12px;
             padding: 1rem;
-            font-size: 0.8rem;
-            border: 1px dashed rgba(0,0,0,0.1);
+            font-size: 0.85rem;
         }
-        
-        .role-badge {
-            font-size: 0.65rem;
+
+        .role-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
             padding: 2px 6px;
             border-radius: 4px;
             background: #e9ecef;
             color: #495057;
-            font-weight: 600;
-            margin-right: 5px;
-            text-transform: uppercase;
+            margin-right: 8px;
+        }
+
+        /* Animation */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 991px) {
+            .visual-side {
+                display: none;
+            }
+            .form-side {
+                background: #fff;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-
-    <div class="login-card fade-in-up">
-        <div class="d-flex flex-column align-items-center text-center">
-            <div class="brand-logo">
-                <i class="bi bi-mortarboard-fill"></i>
-            </div>
-            <h4 class="fw-bold text-dark mb-1">Selamat Datang</h4>
-            <p class="text-muted small mb-4">Silakan masuk untuk melanjutkan akses ke SIAKAD LPK.</p>
-        </div>
-
-        <?php if ($error): ?>
-            <div class="alert alert-danger border-0 shadow-sm rounded-3 d-flex align-items-center p-3 mb-4">
-                <i class="bi bi-exclamation-circle-fill fs-5 me-2"></i>
-                <div class="small"><?= htmlspecialchars($error) ?></div>
-            </div>
-        <?php endif; ?>
-
-        <form method="post" autocomplete="off">
-            <div class="form-floating mb-3">
-                <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
-                <label for="floatingInput">Alamat Email</label>
-            </div>
-            <div class="form-floating mb-4">
-                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-                <label for="floatingPassword">Password</label>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="rememberMe">
-                    <label class="form-check-label small text-muted" for="rememberMe">
-                        Ingat Saya
-                    </label>
+<div class="container-fluid p-0">
+    <div class="row g-0 login-container">
+        <!-- Left Side: Visual -->
+        <div class="col-lg-6 visual-side d-none d-lg-block">
+            <div class="shape-blob blob-1"></div>
+            <div class="shape-blob blob-2"></div>
+            <div class="shape-blob blob-3"></div>
+            
+            <div class="visual-content">
+                <div>
+                    <h3 class="fw-bold mb-2"><i class="bi bi-mortarboard-fill me-2"></i>SIAKAD LPK</h3>
+                    <p class="text-white-50">Sistem Informasi Akademik Terintegrasi</p>
                 </div>
-                <a href="#" class="text-decoration-none small fw-semibold text-primary">Lupa Password?</a>
-            </div>
+                
+                <div class="glass-card mb-5">
+                    <div class="d-flex mb-3 text-warning">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill ms-1"></i>
+                        <i class="bi bi-star-fill ms-1"></i>
+                        <i class="bi bi-star-fill ms-1"></i>
+                        <i class="bi bi-star-fill ms-1"></i>
+                    </div>
+                    <p class="mb-3 fs-5">"Platform ini sangat membantu saya dalam mengelola jadwal belajar dan memantau progress materi secara real-time. UI-nya sangat modern dan mudah digunakan!"</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Sarah+Putri&background=random&size=40" class="rounded-circle me-3" alt="User">
+                        <div>
+                            <div class="fw-bold">Sarah Putri</div>
+                            <div class="small text-white-50">Peserta Web Development</div>
+                        </div>
+                    </div>
+                </div>
 
-            <button type="submit" class="btn btn-primary btn-login w-100 mb-3">
-                Masuk Sekarang
-            </button>
-        </form>
-
-        <div class="divider">Demo Accounts</div>
-
-        <div class="demo-accounts">
-            <div class="d-flex justify-content-between mb-2">
-                <div><span class="role-badge">Super</span> superadmin@lpk.test</div>
-                <div class="text-muted">super123</div>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <div><span class="role-badge">Admin</span> admin@lpk.test</div>
-                <div class="text-muted">admin123</div>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <div><span class="role-badge">Tutor</span> tutor@lpk.test</div>
-                <div class="text-muted">tutor123</div>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-                <div><span class="role-badge">Peserta</span> peserta@lpk.test</div>
-                <div class="text-muted">peserta123</div>
+                <div class="small text-white-50">
+                    &copy; <?= date('Y') ?> Depati Akademi. All rights reserved.
+                </div>
             </div>
         </div>
-        
-        <div class="text-center mt-4">
-            <p class="extra-small text-muted mb-0">&copy; <?= date('Y') ?> Depati Akademi LPK System</p>
+
+        <!-- Right Side: Form -->
+        <div class="col-lg-6 form-side">
+            <div class="form-wrapper fade-in">
+                <div class="d-lg-none mb-4 text-center">
+                    <div class="brand-icon mx-auto mb-3">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <h3 class="fw-bold">SIAKAD LPK</h3>
+                </div>
+
+                <div class="mb-5">
+                    <h2 class="fw-bold mb-2">Selamat Datang Kembali! 👋</h2>
+                    <p class="text-muted">Silakan masukkan detail akun Anda untuk memulai.</p>
+                </div>
+
+                <?php if ($error): ?>
+                    <div class="alert alert-danger border-0 d-flex align-items-center mb-4 rounded-3 bg-danger-subtle text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div><?= htmlspecialchars($error) ?></div>
+                    </div>
+                <?php endif; ?>
+
+                <form method="post" autocomplete="off">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="bi bi-envelope"></i></span>
+                            <input type="email" name="email" class="form-control border-start-0 ps-2" placeholder="nama@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-bold text-muted text-uppercase">Password</label>
+                            <a href="#" class="text-decoration-none small fw-semibold text-primary">Lupa Password?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted ps-3"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password" class="form-control border-start-0 ps-2" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="remember">
+                        <label class="form-check-label text-muted small" for="remember">
+                            Ingat saya di perangkat ini
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-4 shadow-sm">
+                        Masuk ke Akun
+                    </button>
+                    
+                    <!-- Social Login (Visual Only) -->
+                    <div class="divider">Atau masuk dengan</div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <a href="#" class="social-btn">
+                                <i class="bi bi-google text-danger"></i> Google
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="#" class="social-btn">
+                                <i class="bi bi-microsoft text-primary"></i> Microsoft
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Demo Accounts Section -->
+                <div class="mt-5">
+                    <p class="text-center small text-muted mb-3">Akun Demo (Klik untuk menyalin)</p>
+                    <div class="demo-box">
+                        <div class="row g-2">
+                            <div class="col-6 cursor-pointer" onclick="fillLogin('peserta@lpk.test', 'peserta123')">
+                                <div class="d-flex align-items-center p-2 border rounded bg-white h-100 hover-shadow transition-all">
+                                    <span class="role-tag">PESERTA</span>
+                                    <div class="small text-truncate">peserta@lpk.test</div>
+                                </div>
+                            </div>
+                            <div class="col-6 cursor-pointer" onclick="fillLogin('tutor@lpk.test', 'tutor123')">
+                                <div class="d-flex align-items-center p-2 border rounded bg-white h-100 hover-shadow transition-all">
+                                    <span class="role-tag">TUTOR</span>
+                                    <div class="small text-truncate">tutor@lpk.test</div>
+                                </div>
+                            </div>
+                            <div class="col-6 cursor-pointer" onclick="fillLogin('admin@lpk.test', 'admin123')">
+                                <div class="d-flex align-items-center p-2 border rounded bg-white h-100 hover-shadow transition-all">
+                                    <span class="role-tag">ADMIN</span>
+                                    <div class="small text-truncate">admin@lpk.test</div>
+                                </div>
+                            </div>
+                            <div class="col-6 cursor-pointer" onclick="fillLogin('superadmin@lpk.test', 'super123')">
+                                <div class="d-flex align-items-center p-2 border rounded bg-white h-100 hover-shadow transition-all">
+                                    <span class="role-tag">SUPER</span>
+                                    <div class="small text-truncate">super...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function fillLogin(email, password) {
+        document.querySelector('input[name="email"]').value = email;
+        document.querySelector('input[name="password"]').value = password;
+        
+        // Visual feedback
+        const btn = document.querySelector('button[type="submit"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Siap Masuk!';
+        btn.classList.replace('btn-primary', 'btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace('btn-success', 'btn-primary');
+        }, 1500);
+    }
+</script>
 </body>
 </html>

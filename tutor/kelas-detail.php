@@ -2,748 +2,714 @@
 require_once __DIR__ . '/../config.php';
 require_login(['tutor']);
 
-$user         = current_user();
-$kodeKelas    = $_GET['kode'] ?? 'OM-01';
-$title        = 'Kelola Kelas ' . $kodeKelas;
-$currentPage  = 'kelas-saya';
+$user = current_user();
+$title        = 'Detail Kelas';
+$currentPage  = 'kelas-aktif';
 $roleBasePath = '/tutor';
 $baseUrl      = '/siakad';
 
+$classId = $_GET['id'] ?? 'CLS-001';
+
+// Dummy Data: Class Info
+$classData = [
+    'id' => 'CLS-001',
+    'name' => 'Operator Komputer - Batch 12',
+    'code' => 'OM-12',
+    // Flexible Schedule: Array of schedules
+    'schedules' => [
+        ['day' => 'Senin', 'time' => '08.00 - 10.00 WIB', 'room' => 'Lab Komputer 1'],
+        ['day' => 'Kamis', 'time' => '13.00 - 15.00 WIB', 'room' => 'Lab Komputer 2'],
+        ['day' => 'Jumat', 'time' => '09.00 - 11.00 WIB', 'room' => 'Lab Teori A'], // Extra schedule example
+    ],
+    'students_count' => 15,
+    'meetings_total' => 12,
+    'meetings_done' => 4,
+    'progress' => 33,
+    'status' => 'active',
+    'avg_attendance' => 88
+];
+
+// Dummy Data: Students
+$students = [
+    ['id' => 'S001', 'name' => 'Ahmad Rizki', 'nis' => '2023001', 'attendance' => 90, 'last_seen' => '2 jam lalu'],
+    ['id' => 'S002', 'name' => 'Budi Santoso', 'nis' => '2023002', 'attendance' => 85, 'last_seen' => '1 hari lalu'],
+    ['id' => 'S003', 'name' => 'Citra Dewi', 'nis' => '2023003', 'attendance' => 100, 'last_seen' => 'Baru saja'],
+    ['id' => 'S004', 'name' => 'Dedi Pratama', 'nis' => '2023004', 'attendance' => 75, 'last_seen' => '3 hari lalu'],
+    ['id' => 'S005', 'name' => 'Eka Putri', 'nis' => '2023005', 'attendance' => 95, 'last_seen' => '5 jam lalu'],
+];
+
 ob_start();
 ?>
-<div class="row mb-3">
-    <div class="col-lg-8">
-        <div class="d-flex align-items-center gap-2 mb-1">
-            <h4 class="fw-semibold mb-0">Kelola Kelas: <?= htmlspecialchars($kodeKelas) ?></h4>
-            <span class="badge bg-light text-muted extra-small">
-                <i class="bi bi-sliders me-1"></i> Pengaturan Kelas
-            </span>
-        </div>
-        <p class="text-muted small mb-0">
-            Atur informasi kelas, materi & video per pertemuan, dan lihat rekap absen dari satu halaman.
-            Semua contoh masih dummy.
-        </p>
-    </div>
-    <div class="col-lg-4 mt-3 mt-lg-0 text-lg-end">
-        <a href="<?= $baseUrl . $roleBasePath ?>/kelas-saya.php" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> Kembali ke Kelas & Absen
-        </a>
-    </div>
-</div>
 
-<div class="row g-3 mb-3">
-    <div class="col-6 col-md-3">
-        <div class="p-3 rounded-3 bg-white shadow-sm d-flex align-items-center gap-3">
-            <div class="app-summary-icon bg-primary-subtle text-primary">
-                <i class="bi bi-people"></i>
+<div class="d-flex flex-column gap-4">
+    <!-- Header: Class Info -->
+    <div class="d-flex align-items-start justify-content-between">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a href="kelas-aktif.php" class="text-muted"><i class="bi bi-arrow-left"></i></a>
+                <h4 class="fw-bold mb-0"><?= $classData['name'] ?></h4>
+                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                    <?= strtoupper($classData['status']) ?>
+                </span>
             </div>
-            <div>
-                <div class="extra-small text-muted text-uppercase">Peserta</div>
-                <div class="fs-5 fw-semibold">20</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="p-3 rounded-3 bg-white shadow-sm d-flex align-items-center gap-3">
-            <div class="app-summary-icon bg-success-subtle text-success">
-                <i class="bi bi-journal-check"></i>
-            </div>
-            <div>
-                <div class="extra-small text-muted text-uppercase">Pertemuan</div>
-                <div class="fs-5 fw-semibold">7 / 10</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="p-3 rounded-3 bg-white shadow-sm d-flex align-items-center gap-3">
-            <div class="app-summary-icon bg-info-subtle text-info">
-                <i class="bi bi-play-circle"></i>
-            </div>
-            <div>
-                <div class="extra-small text-muted text-uppercase">Materi upload</div>
-                <div class="fs-5 fw-semibold">12</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-md-3">
-        <div class="p-3 rounded-3 bg-white shadow-sm d-flex align-items-center gap-3">
-            <div class="app-summary-icon bg-warning-subtle text-warning">
-                <i class="bi bi-check2-square"></i>
-            </div>
-            <div>
-                <div class="extra-small text-muted text-uppercase">Rata2 hadir</div>
-                <div class="fs-5 fw-semibold">82%</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- TAB NAV -->
-<ul class="nav nav-pills mb-3 small" role="tablist">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tab-info-kelas" data-bs-toggle="pill"
-                data-bs-target="#panel-info-kelas" type="button" role="tab">
-            <i class="bi bi-info-circle me-1"></i> Info Kelas
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-materi" data-bs-toggle="pill"
-                data-bs-target="#panel-materi" type="button" role="tab">
-            <i class="bi bi-easel3 me-1"></i> Materi & Video
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-absen" data-bs-toggle="pill"
-                data-bs-target="#panel-absen" type="button" role="tab">
-            <i class="bi bi-clipboard-check me-1"></i> Absen & Rekap
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-pr" data-bs-toggle="pill"
-                data-bs-target="#panel-pr" type="button" role="tab">
-            <i class="bi bi-journal-text me-1"></i> PR & Penilaian
-        </button>
-    </li>
-</ul>
-
-<div class="tab-content">
-    <!-- PANEL INFO KELAS -->
-    <div class="tab-pane fade show active" id="panel-info-kelas" role="tabpanel">
-        <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body small">
-                <h6 class="fw-semibold mb-2">Informasi Kelas</h6>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label extra-small text-muted mb-1">Kode & Nama Kelas</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   value="<?= htmlspecialchars($kodeKelas) ?> – Operator Komputer (Dummy)" disabled>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label extra-small text-muted mb-1">Jadwal</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   value="Senin & Rabu, 08.00–10.00" disabled>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label extra-small text-muted mb-1">Ruang</label>
-                            <input type="text" class="form-control form-control-sm"
-                                   value="Lab 1" disabled>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label extra-small text-muted mb-1">Deskripsi singkat</label>
-                            <textarea class="form-control form-control-sm" rows="3" disabled>
-Pengenalan komputer dan Ms Office untuk pemula yang mau masuk kerja kantoran.
-                            </textarea>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label extra-small text-muted mb-1">Catatan untuk peserta</label>
-                            <textarea class="form-control form-control-sm" rows="2" disabled>
-Bawa flashdisk sendiri dan pastikan datang tepat waktu setiap pertemuan.
-                            </textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="alert alert-light border extra-small mb-0 mt-2">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Di versi final, info ini bisa diedit oleh admin / tutor sesuai hak akses.
-                </div>
+            <div class="d-flex align-items-center gap-3 text-muted small mt-2">
+                <span><i class="bi bi-people me-1"></i> <?= $classData['students_count'] ?> Siswa</span>
+                <span class="text-muted opacity-25">|</span>
+                <span><i class="bi bi-calendar-check me-1"></i> Pertemuan <?= $classData['meetings_done'] ?>/<?= $classData['meetings_total'] ?></span>
             </div>
         </div>
     </div>
 
-    <!-- PANEL MATERI & VIDEO -->
-    <div class="tab-pane fade" id="panel-materi" role="tabpanel">
-        <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body small">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="fw-semibold mb-0">Materi & Video per Pertemuan</h6>
-                    <button class="btn btn-primary btn-sm" type="button" disabled>
-                        <i class="bi bi-plus-lg me-1"></i> Tambah materi (Demo)
-                    </button>
-                </div>
-                <p class="extra-small text-muted mb-2">
-                    Materi di bawah ini akan tampil di halaman e-learning peserta, terurut per pertemuan.
-                </p>
-
-                <!-- pertemuan 1 -->
-                <div class="border rounded-3 p-3 mb-2">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div>
-                            <span class="badge bg-light text-muted extra-small me-1">Pertemuan 1</span>
-                            <span class="fw-semibold small">Pengenalan Komputer & Sistem Operasi</span>
-                        </div>
-                        <span class="extra-small text-muted">Status: <strong>Terbit</strong></span>
-                    </div>
-                    <div class="extra-small text-muted mb-2">
-                        Tujuan: peserta mengenal bagian komputer, OS, dan cara shutdown yang benar.
-                    </div>
-                    <ul class="extra-small mb-2 ps-3">
-                        <li>Slide: Pengenalan Komputer (PDF)</li>
-                        <li>Video: Tour Desktop & File Explorer (10 menit)</li>
-                        <li>Latihan: Menyalakan & mematikan komputer dengan benar</li>
-                    </ul>
-                    <div class="d-flex justify-content-end gap-2 extra-small">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled>
-                            <i class="bi bi-eye me-1"></i> Preview sebagai peserta
-                        </button>
-                    </div>
-                </div>
-
-                <!-- pertemuan 2 -->
-                <div class="border rounded-3 p-3 mb-2">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div>
-                            <span class="badge bg-light text-muted extra-small me-1">Pertemuan 2</span>
-                            <span class="fw-semibold small">Ms Word Dasar</span>
-                        </div>
-                        <span class="extra-small text-muted">Status: <strong>Terbit</strong></span>
-                    </div>
-                    <div class="extra-small text-muted mb-2">
-                        Fokus: mengetik surat sederhana, format paragraf, dan penyimpanan file.
-                    </div>
-                    <ul class="extra-small mb-2 ps-3">
-                        <li>Slide: Dasar Ms Word</li>
-                        <li>Video: Mengetik & format paragraf (8 menit)</li>
-                        <li>Latihan: Mengetik surat resmi 1 halaman</li>
-                    </ul>
-                    <div class="d-flex justify-content-end gap-2 extra-small">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled>
-                            <i class="bi bi-eye me-1"></i> Preview sebagai peserta
-                        </button>
-                    </div>
-                </div>
-
-                <!-- pertemuan 3 (draft) -->
-                <div class="border rounded-3 p-3 mb-2 bg-light-subtle">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div>
-                            <span class="badge bg-secondary-subtle text-secondary extra-small me-1">Pertemuan 3</span>
-                            <span class="fw-semibold small">Ms Excel Dasar</span>
-                        </div>
-                        <span class="extra-small text-muted">Status: <strong>Draft</strong></span>
-                    </div>
-                    <div class="extra-small text-muted mb-2">
-                        Materi ini belum terbit untuk peserta. Tutor bisa melengkapi video & file dulu.
-                    </div>
-                    <ul class="extra-small mb-2 ps-3">
-                        <li>Belum ada file yang diupload</li>
-                    </ul>
-                    <div class="d-flex justify-content-end gap-2 extra-small">
-                        <button class="btn btn-outline-secondary btn-sm" type="button" disabled>
-                            <i class="bi bi-upload me-1"></i> Upload materi (Demo)
-                        </button>
-                    </div>
-                </div>
-
-                <div class="alert alert-light border extra-small mb-0">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Di sisi peserta, tampilan akan mirip e-learning: pertemuan berurutan dengan tombol
-                    <strong>Lanjutkan</strong> dan status selesai/belum.
-                </div>
-            </div>
+    <!-- Navigation Tabs -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-bottom px-4 pt-4 pb-0">
+            <ul class="nav nav-tabs card-header-tabs" id="classTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-medium" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-medium" id="materi-tab" data-bs-toggle="tab" data-bs-target="#materi" type="button" role="tab">Materi & Absensi</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-medium" id="siswa-tab" data-bs-toggle="tab" data-bs-target="#siswa" type="button" role="tab">Data Siswa</button>
+                </li>
+            </ul>
         </div>
-    </div>
-
-    <!-- PANEL ABSEN & REKAP -->
-    <div class="tab-pane fade" id="panel-absen" role="tabpanel">
         
-        <!-- View 1: Rekap Absensi (Default) -->
-        <div id="view-rekap-absen">
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body small">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h6 class="fw-semibold mb-1">Rekap Absen Kelas</h6>
-                            <p class="text-muted extra-small mb-0">Ringkasan kehadiran peserta per pertemuan.</p>
-                        </div>
-                        <button class="btn btn-outline-success btn-sm" onclick="alert('Fitur Export Excel akan mendownload file .xlsx (Demo)')">
-                            <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
-                        </button>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light extra-small text-muted text-uppercase">
-                                <tr>
-                                    <th>Pertemuan</th>
-                                    <th>Tanggal & Waktu</th>
-                                    <th>Materi</th>
-                                    <th class="text-center">Kehadiran</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-end" style="width: 120px;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="extra-small">
-                                <!-- Row 1 -->
-                                <tr>
-                                    <td>
-                                        <div class="fw-bold text-primary">Pertemuan 1</div>
-                                        <div class="text-muted">Minggu ke-1</div>
-                                    </td>
-                                    <td>
-                                        <div>01 Nov 2025</div>
-                                        <div class="text-muted">08.00 - 10.00</div>
-                                    </td>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 200px;">Pengenalan Komputer & Sistem Operasi</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex align-items-center justify-content-center gap-2">
-                                            <div class="progress w-100" style="height: 6px; width: 60px !important;">
-                                                <div class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
-                                            </div>
-                                            <span>18/20</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle">Selesai</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-light btn-sm text-primary btn-detail-absen" data-meeting="1">
-                                            <i class="bi bi-pencil-square me-1"></i> Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 2 -->
-                                <tr>
-                                    <td>
-                                        <div class="fw-bold text-primary">Pertemuan 2</div>
-                                        <div class="text-muted">Minggu ke-1</div>
-                                    </td>
-                                    <td>
-                                        <div>03 Nov 2025</div>
-                                        <div class="text-muted">08.00 - 10.00</div>
-                                    </td>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 200px;">Ms Word Dasar</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex align-items-center justify-content-center gap-2">
-                                            <div class="progress w-100" style="height: 6px; width: 60px !important;">
-                                                <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
-                                            </div>
-                                            <span>19/20</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle">Selesai</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-light btn-sm text-primary btn-detail-absen" data-meeting="2">
-                                            <i class="bi bi-pencil-square me-1"></i> Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Row 3 (Draft/Upcoming) -->
-                                <tr class="bg-light-subtle">
-                                    <td>
-                                        <div class="fw-bold text-muted">Pertemuan 3</div>
-                                        <div class="text-muted">Minggu ke-2</div>
-                                    </td>
-                                    <td>
-                                        <div>05 Nov 2025</div>
-                                        <div class="text-muted">08.00 - 10.00</div>
-                                    </td>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 200px;">Ms Excel Dasar</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="text-muted">-</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Belum Mulai</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-light btn-sm text-muted" disabled>
-                                            <i class="bi bi-lock me-1"></i> Detail
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- View 2: Detail Absensi (Hidden by default) -->
-        <div id="view-detail-absen" class="d-none">
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-light btn-sm rounded-circle" id="btn-back-rekap">
-                            <i class="bi bi-arrow-left"></i>
-                        </button>
-                        <div>
-                            <h6 class="fw-semibold mb-0" id="detail-title">Detail Absensi - Pertemuan 1</h6>
-                            <div class="extra-small text-muted">01 Nov 2025 • Pengenalan Komputer</div>
-                        </div>
-                    </div>
-                    <div>
-                        <span class="badge bg-success-subtle text-success me-2">
-                            <i class="bi bi-check-circle-fill me-1"></i> 18 Hadir
-                        </span>
-                        <span class="badge bg-warning-subtle text-warning me-2">
-                            <i class="bi bi-exclamation-circle-fill me-1"></i> 1 Izin
-                        </span>
-                        <span class="badge bg-danger-subtle text-danger">
-                            <i class="bi bi-x-circle-fill me-1"></i> 1 Alfa
-                        </span>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light extra-small text-muted">
-                                <tr>
-                                    <th class="ps-4">Nama Peserta</th>
-                                    <th>NIP</th>
-                                    <th>Waktu Absen</th>
-                                    <th>Status Kehadiran</th>
-                                    <th>Keterangan</th>
-                                    <th class="text-end pe-4">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="extra-small">
-                                <!-- Sample Students -->
-                                <?php 
-                                $students = [
-                                    ['name' => 'Aditya Pratama', 'nip' => '2025001', 'time' => '07:55', 'status' => 'Hadir', 'ket' => '-'],
-                                    ['name' => 'Budi Santoso', 'nip' => '2025002', 'time' => '08:05', 'status' => 'Hadir', 'ket' => 'Telat 5 menit'],
-                                    ['name' => 'Citra Kirana', 'nip' => '2025003', 'time' => '-', 'status' => 'Sakit', 'ket' => 'Surat Dokter via WA'],
-                                    ['name' => 'Doni Irawan', 'nip' => '2025004', 'time' => '-', 'status' => 'Alfa', 'ket' => '-'],
-                                    ['name' => 'Eka Putri', 'nip' => '2025005', 'time' => '07:58', 'status' => 'Hadir', 'ket' => '-'],
-                                ];
-                                foreach($students as $s): 
-                                    $statusBadge = match($s['status']) {
-                                        'Hadir' => 'bg-success-subtle text-success',
-                                        'Sakit', 'Izin' => 'bg-warning-subtle text-warning',
-                                        'Alfa' => 'bg-danger-subtle text-danger',
-                                        default => 'bg-light text-muted'
-                                    };
-                                ?>
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="avatar-sm rounded-circle bg-light d-flex align-items-center justify-content-center fw-bold text-muted" style="width: 24px; height: 24px; font-size: 10px;">
-                                                <?= substr($s['name'], 0, 2) ?>
-                                            </div>
-                                            <span class="fw-medium"><?= $s['name'] ?></span>
-                                        </div>
-                                    </td>
-                                    <td><?= $s['nip'] ?></td>
-                                    <td><?= $s['time'] ?></td>
-                                    <td>
-                                        <span class="badge <?= $statusBadge ?>"><?= $s['status'] ?></span>
-                                    </td>
-                                    <td><?= $s['ket'] ?></td>
-                                    <td class="text-end pe-4">
-                                        <div class="dropdown">
-                                            <button class="btn btn-light btn-sm py-0 px-2" type="button" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end extra-small shadow border-0">
-                                                <li><h6 class="dropdown-header">Ubah Status</h6></li>
-                                                <li><a class="dropdown-item text-success" href="#"><i class="bi bi-check me-2"></i>Hadir</a></li>
-                                                <li><a class="dropdown-item text-warning" href="#"><i class="bi bi-envelope me-2"></i>Izin/Sakit</a></li>
-                                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-x me-2"></i>Alfa</a></li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer bg-white py-3 border-0 d-flex justify-content-end gap-2">
-                    <button class="btn btn-light btn-sm text-muted">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Absen
-                    </button>
-                    <button class="btn btn-primary btn-sm">
-                        <i class="bi bi-save me-1"></i> Simpan Perubahan
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const viewRekap = document.getElementById('view-rekap-absen');
-            const viewDetail = document.getElementById('view-detail-absen');
-            const btnBack = document.getElementById('btn-back-rekap');
-            const detailButtons = document.querySelectorAll('.btn-detail-absen');
-            const detailTitle = document.getElementById('detail-title');
-
-            // Show Detail
-            detailButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const meetingId = this.getAttribute('data-meeting');
-                    detailTitle.textContent = 'Detail Absensi - Pertemuan ' + meetingId;
+        <div class="card-body p-4">
+            <div class="tab-content" id="classTabsContent">
+                
+                <!-- TAB: OVERVIEW (REDESIGNED) -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel">
                     
-                    viewRekap.classList.add('d-none');
-                    viewDetail.classList.remove('d-none');
-                });
-            });
-
-            // Back to Rekap
-            btnBack.addEventListener('click', function() {
-                viewDetail.classList.add('d-none');
-                viewRekap.classList.remove('d-none');
-            });
-        });
-        </script>
-
-    </div>
-
-    <!-- PANEL PR & PENILAIAN -->
-    <div class="tab-pane fade" id="panel-pr" role="tabpanel">
-        <div id="view-pr-list">
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body small">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="fw-semibold mb-0">PR & Penilaian Kelas</h6>
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalBuatTugas">
-                            <i class="bi bi-journal-plus me-1"></i> Buat PR (Demo)
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light extra-small text-muted">
-                                <tr>
-                                    <th>PR / Tugas</th>
-                                    <th>Deadline</th>
-                                    <th class="text-center">Submit</th>
-                                    <th class="text-center">Status</th>
-                                    <th style="width: 120px;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="extra-small">
-                                <tr>
-                                    <td>
-                                        <div class="fw-semibold text-primary">PR 01 – Format Surat</div>
-                                        <div class="text-muted">Upload surat resmi 1 halaman (Word/PDF)</div>
-                                    </td>
-                                    <td>10 Des 2025, 23:59</td>
-                                    <td class="text-center">15 / 20</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-warning-subtle text-warning">
-                                            <i class="bi bi-hourglass-split me-1"></i>Menunggu nilai
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-outline-primary btn-sm w-100 btn-nilai-pr" data-id="1">
-                                            <i class="bi bi-clipboard-check me-1"></i> Nilai PR
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="fw-semibold text-primary">Project Konten IG</div>
-                                        <div class="text-muted">Feed + caption promosi (DM-02 style)</div>
-                                    </td>
-                                    <td>15 Des 2025, 23:59</td>
-                                    <td class="text-center">18 / 18</td>
-                                    <td class="text-center">
-                                        <span class="badge bg-success-subtle text-success">
-                                            <i class="bi bi-check-circle me-1"></i>Selesai
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-outline-secondary btn-sm w-100 btn-nilai-pr" data-id="2">
-                                            <i class="bi bi-eye me-1"></i> Lihat nilai
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="extra-small text-muted mt-2 mb-0">
-                        Penilaian PR di sini akan ikut dihitung ke nilai akhir dan rapor.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- View Detail Nilai PR (Hidden by default) -->
-        <div id="view-pr-detail" class="d-none">
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-light btn-sm rounded-circle" id="btn-back-pr">
-                            <i class="bi bi-arrow-left"></i>
-                        </button>
-                        <div>
-                            <h6 class="fw-semibold mb-0" id="pr-detail-title">Penilaian - PR 01</h6>
-                            <div class="extra-small text-muted">Deadline: 10 Des 2025 • Upload File</div>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <span class="badge bg-primary-subtle text-primary">
-                            <i class="bi bi-cloud-arrow-up-fill me-1"></i> 15 Submit
-                        </span>
-                        <span class="badge bg-warning-subtle text-warning">
-                            <i class="bi bi-hourglass-split me-1"></i> 5 Belum
-                        </span>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light extra-small text-muted">
-                                <tr>
-                                    <th class="ps-4">Nama Peserta</th>
-                                    <th>Waktu Upload</th>
-                                    <th>File</th>
-                                    <th style="width: 150px;">Nilai (0-100)</th>
-                                    <th>Komentar</th>
-                                    <th class="text-end pe-4">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="extra-small">
-                                <!-- Sample Submission -->
-                                <?php 
-                                $submissions = [
-                                    ['name' => 'Aditya Pratama', 'time' => '10 Des, 14:30', 'file' => 'surat_aditya.docx', 'score' => 85, 'status' => 'Dinilai'],
-                                    ['name' => 'Budi Santoso', 'time' => '10 Des, 20:15', 'file' => 'tugas_budi_fix.pdf', 'score' => '', 'status' => 'Menunggu'],
-                                    ['name' => 'Citra Kirana', 'time' => '-', 'file' => '-', 'score' => 0, 'status' => 'Belum'],
-                                ];
-                                foreach($submissions as $sub): 
-                                ?>
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="fw-medium"><?= $sub['name'] ?></div>
-                                    </td>
-                                    <td><?= $sub['time'] ?></td>
-                                    <td>
-                                        <?php if($sub['file'] !== '-'): ?>
-                                            <a href="#" class="text-decoration-none text-primary">
-                                                <i class="bi bi-file-earmark-text me-1"></i> <?= $sub['file'] ?>
-                                            </a>
-                                        <?php else: ?>
-                                            <span class="text-muted">-</span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <input type="number" class="form-control form-control-sm" value="<?= $sub['score'] ?>" placeholder="0" min="0" max="100">
-                                    </td>
-                                    <td>
-                                        <input type="text" class="form-control form-control-sm" placeholder="Tulis komentar...">
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <?php if($sub['status'] == 'Dinilai'): ?>
-                                            <span class="badge bg-success-subtle text-success">Dinilai</span>
-                                        <?php elseif($sub['status'] == 'Menunggu'): ?>
-                                            <span class="badge bg-warning-subtle text-warning">Perlu Dinilai</span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger-subtle text-danger">Belum Submit</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer bg-white py-3 border-0 d-flex justify-content-end gap-2">
-                    <button class="btn btn-primary btn-sm">
-                        <i class="bi bi-save me-1"></i> Simpan Penilaian
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Buat Tugas -->
-        <div class="modal fade" id="modalBuatTugas" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header border-bottom-0 pb-0">
-                        <h5 class="modal-title fw-semibold">Buat Tugas Baru</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body pt-3 pb-4">
-                        <form>
-                            <div class="row g-3">
-                                <div class="col-md-8">
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-medium">Judul Tugas</label>
-                                        <input type="text" class="form-control" placeholder="Contoh: Latihan Excel Rumus VLOOKUP">
+                    <!-- Top Stats -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-primary-subtle bg-opacity-10 h-100">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary text-white rounded-circle p-3">
+                                        <i class="bi bi-journal-check fs-4"></i>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-medium">Deskripsi / Instruksi</label>
-                                        <textarea class="form-control" rows="4" placeholder="Jelaskan detail tugas yang harus dikerjakan siswa..."></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-medium">Lampiran File (Opsional)</label>
-                                        <input type="file" class="form-control form-control-sm">
-                                        <div class="form-text extra-small">File pendukung seperti soal atau template.</div>
+                                    <div>
+                                        <div class="small text-muted text-uppercase fw-bold">Progres Materi</div>
+                                        <div class="fs-4 fw-bold text-primary"><?= $classData['progress'] ?>%</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="p-3 bg-light rounded-3">
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-medium">Tenggat Waktu (Deadline)</label>
-                                            <input type="datetime-local" class="form-control form-control-sm">
+                                <div class="progress mt-3" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: <?= $classData['progress'] ?>%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-success-subtle bg-opacity-10 h-100">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-success text-white rounded-circle p-3">
+                                        <i class="bi bi-people fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted text-uppercase fw-bold">Rata-rata Kehadiran</div>
+                                        <div class="fs-4 fw-bold text-success"><?= $classData['avg_attendance'] ?>%</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1 mt-3">
+                                    <?php for($i=0; $i<10; $i++): ?>
+                                        <div class="flex-grow-1 rounded-pill bg-success<?= $i > 8 ? '-subtle' : '' ?>" style="height: 6px;"></div>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 border rounded-3 bg-warning-subtle bg-opacity-10 h-100">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-warning text-dark rounded-circle p-3">
+                                        <i class="bi bi-trophy fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <div class="small text-muted text-uppercase fw-bold">Siswa Terbaik</div>
+                                        <div class="fs-4 fw-bold text-dark">Citra Dewi</div>
+                                    </div>
+                                </div>
+                                <div class="mt-3 small text-muted">
+                                    <i class="bi bi-star-fill text-warning me-1"></i> Nilai rata-rata 98.5
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <!-- Left: Jadwal Fleksibel -->
+                        <div class="col-lg-6">
+                            <div class="card h-100 border shadow-none">
+                                <div class="card-header bg-white py-3">
+                                    <h6 class="fw-bold mb-0"><i class="bi bi-calendar-week me-2 text-primary"></i>Jadwal Rutin Kelas</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex flex-column gap-3">
+                                        <?php foreach($classData['schedules'] as $sch): ?>
+                                        <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border-start border-4 border-primary">
+                                            <div class="text-center" style="min-width: 60px;">
+                                                <div class="small text-muted text-uppercase">Hari</div>
+                                                <div class="fw-bold text-dark"><?= $sch['day'] ?></div>
+                                            </div>
+                                            <div class="vr"></div>
+                                            <div>
+                                                <div class="fw-bold text-dark"><?= $sch['time'] ?></div>
+                                                <div class="small text-muted"><i class="bi bi-geo-alt me-1"></i> <?= $sch['room'] ?></div>
+                                            </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-medium">Tipe Pengumpulan</label>
-                                            <select class="form-select form-select-sm">
-                                                <option value="file">Upload File</option>
-                                                <option value="text">Teks Online</option>
-                                                <option value="link">Link Eksternal</option>
-                                            </select>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Activity Timeline -->
+                        <div class="col-lg-6">
+                            <div class="card h-100 border shadow-none">
+                                <div class="card-header bg-white py-3">
+                                    <h6 class="fw-bold mb-0"><i class="bi bi-activity me-2 text-primary"></i>Aktivitas Terkini</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline-activity ps-2">
+                                        <div class="d-flex gap-3 mb-4">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 1;"><i class="bi bi-check-lg small"></i></div>
+                                                <div class="h-100 border-start border-2 border-light my-1 position-absolute" style="transform: translateY(32px);"></div>
+                                            </div>
+                                            <div>
+                                                <div class="small text-primary fw-bold mb-1">Hari ini, 09:30</div>
+                                                <div class="fw-bold text-dark">Absensi Pertemuan 4 Selesai</div>
+                                                <div class="small text-muted bg-light p-2 rounded mt-1">12 dari 15 Siswa hadir dalam sesi ini.</div>
+                                            </div>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="form-label small fw-medium">Nilai Maksimal</label>
-                                            <input type="number" class="form-control form-control-sm" value="100">
+                                        <div class="d-flex gap-3 mb-4">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <div class="rounded-circle bg-info text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 1;"><i class="bi bi-file-earmark-text small"></i></div>
+                                                <div class="h-100 border-start border-2 border-light my-1 position-absolute" style="transform: translateY(32px);"></div>
+                                            </div>
+                                            <div>
+                                                <div class="small text-muted mb-1">Kemarin</div>
+                                                <div class="fw-bold text-dark">Tugas Baru: Latihan Formatting</div>
+                                                <div class="small text-muted">Deadline: 20 Des 2025</div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-3">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px; z-index: 1;"><i class="bi bi-person-plus small"></i></div>
+                                            </div>
+                                            <div>
+                                                <div class="small text-muted mb-1">3 Hari lalu</div>
+                                                <div class="fw-bold text-dark">Siswa Baru Bergabung</div>
+                                                <div class="small text-muted">Eka Putri ditambahkan ke kelas.</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="modal-footer border-top-0 pt-0">
-                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-primary btn-sm">
-                            <i class="bi bi-send me-1"></i> Terbitkan Tugas
+                </div>
+
+                <!-- TAB: MATERI & ABSENSI (ACCORDION) -->
+                <div class="tab-pane fade" id="materi" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0">Daftar Pertemuan & Materi</h6>
+                        <button class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalTambahPertemuan">
+                            <i class="bi bi-plus-lg me-1"></i> Tambah Pertemuan
                         </button>
+                    </div>
+                    
+                    <div class="accordion" id="accordionMateri">
+                        <?php for($i=1; $i<=5; $i++): 
+                            $isCurrent = ($i == 4);
+                            $isDone = ($i < 4);
+                        ?>
+                        <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button <?= $isCurrent ? '' : 'collapsed' ?> bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $i ?>" aria-expanded="<?= $isCurrent ? 'true' : 'false' ?>">
+                                    <div class="d-flex align-items-center gap-3 w-100 me-3">
+                                        <div class="d-flex flex-column align-items-center justify-content-center bg-<?= $isDone ? 'success' : ($isCurrent ? 'primary' : 'light') ?>-subtle rounded p-2" style="width: 50px; height: 50px;">
+                                            <div class="small fw-bold text-<?= $isDone ? 'success' : ($isCurrent ? 'primary' : 'muted') ?>">PER</div>
+                                            <div class="fw-bold fs-5 text-<?= $isDone ? 'success' : ($isCurrent ? 'primary' : 'muted') ?>"><?= $i ?></div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-dark mb-1">
+                                                Pengenalan Tools Microsoft Word Part <?= $i ?>
+                                                <?php if($isCurrent): ?><span class="badge bg-primary ms-2">Sedang Berlangsung</span><?php endif; ?>
+                                                <?php if($isDone): ?><span class="badge bg-success-subtle text-success ms-2"><i class="bi bi-check-lg"></i> Selesai</span><?php endif; ?>
+                                            </div>
+                                            <div class="small text-muted">10 Des 2025 • Lab Komputer 1</div>
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse<?= $i ?>" class="accordion-collapse collapse <?= $isCurrent ? 'show' : '' ?>" data-bs-parent="#accordionMateri">
+                                <div class="accordion-body bg-light border-top">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="card border-0 h-100">
+                                                <div class="card-body p-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h6 class="fw-bold small text-uppercase text-muted mb-0"><i class="bi bi-file-text me-1"></i> Materi Pelajaran</h6>
+                                                        <button class="btn btn-sm btn-link text-decoration-none p-0" data-bs-toggle="modal" data-bs-target="#modalKelolaMateri"><i class="bi bi-pencil-square"></i> Kelola</button>
+                                                    </div>
+                                                    <ul class="list-unstyled small mb-0 d-flex flex-column gap-2">
+                                                        <li><a href="#" class="text-decoration-none d-flex align-items-center gap-2"><i class="bi bi-file-pdf text-danger"></i> Modul_Bab_<?= $i ?>.pdf</a></li>
+                                                        <li><a href="#" class="text-decoration-none d-flex align-items-center gap-2"><i class="bi bi-play-circle text-primary"></i> Video Tutorial Part <?= $i ?></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card border-0 h-100">
+                                                <div class="card-body p-3">
+                                                    <h6 class="fw-bold small text-uppercase text-muted mb-3"><i class="bi bi-check-square me-1"></i> Absensi</h6>
+                                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                                        <span class="small text-muted">Hadir</span>
+                                                        <span class="fw-bold text-success">12 Siswa</span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <span class="small text-muted">Tidak Hadir</span>
+                                                        <span class="fw-bold text-danger">3 Siswa</span>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#modalDetailAbsensi">Lihat Detail Absen</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card border-0 h-100">
+                                                <div class="card-body p-3">
+                                                    <h6 class="fw-bold small text-uppercase text-muted mb-3"><i class="bi bi-pencil-square me-1"></i> Tugas / Kuis</h6>
+                                                    <?php if($i % 2 == 0): ?>
+                                                        <div class="alert alert-light border mb-0 small">
+                                                            <div class="fw-bold">Latihan Praktik <?= $i ?></div>
+                                                            <div class="text-muted mb-2">Deadline: 15 Des 2025</div>
+                                                            <div class="progress" style="height: 4px;">
+                                                                <div class="progress-bar bg-warning" style="width: 45%"></div>
+                                                            </div>
+                                                            <div class="mt-1 extra-small text-end text-muted">8/15 Mengumpulkan</div>
+                                                        </div>
+                                                        <button class="btn btn-sm btn-link text-decoration-none px-0 mt-2">Edit Tugas</button>
+                                                    <?php else: ?>
+                                                        <div class="text-center py-3 border border-dashed rounded bg-light mb-0">
+                                                             <div class="small text-muted mb-2">Belum ada tugas</div>
+                                                             <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalTambahTugas">
+                                                                <i class="bi bi-plus-lg me-1"></i> Buat Tugas
+                                                             </button>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+
+                <!-- TAB: DATA SISWA (MODERNIZED) -->
+                <div class="tab-pane fade" id="siswa" role="tabpanel">
+                    <div class="row mb-3">
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0" placeholder="Cari siswa berdasarkan nama atau NIS...">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 text-end">
+                            <button class="btn btn-outline-primary rounded-pill"><i class="bi bi-download me-1"></i> Export Data</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive border rounded-3">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 py-3 ps-3">Siswa</th>
+                                    <th class="border-0 py-3">NIS</th>
+                                    <th class="border-0 py-3 text-center">Kehadiran</th>
+                                    <th class="border-0 py-3 text-center">Status</th>
+                                    <th class="border-0 py-3 text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($students as $student): ?>
+                                <tr>
+                                    <td class="ps-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar-placeholder rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <?= substr($student['name'], 0, 1) ?>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark"><?= $student['name'] ?></div>
+                                                <div class="extra-small text-muted"><i class="bi bi-clock me-1"></i> <?= $student['last_seen'] ?></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted"><?= $student['nis'] ?></td>
+                                    <td class="text-center">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="fw-bold text-<?= $student['attendance'] >= 90 ? 'success' : 'warning' ?>">
+                                                <?= $student['attendance'] ?>%
+                                            </span>
+                                            <div class="progress w-75 bg-light" style="height: 4px;">
+                                                <div class="progress-bar bg-<?= $student['attendance'] >= 90 ? 'success' : 'warning' ?>" style="width: <?= $student['attendance'] ?>%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success-subtle text-success rounded-pill px-3">Aktif</span>
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <button class="btn btn-sm btn-light text-primary border rounded-pill px-3 btn-student-action" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#modalStudentAction"
+                                                data-name="<?= $student['name'] ?>"
+                                                data-nis="<?= $student['nis'] ?>">
+                                            Detail
+                                        </button>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Student Action (Cool Modern Design) -->
+<div class="modal fade" id="modalStudentAction" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <!-- Sidebar Profile -->
+                    <div class="col-md-4 bg-light border-end">
+                        <div class="p-4 text-center h-100 d-flex flex-column">
+                            <div class="mb-4 mt-2">
+                                <div class="avatar-placeholder bg-white border shadow-sm rounded-circle mx-auto d-flex align-items-center justify-content-center text-primary display-4 fw-bold" style="width: 100px; height: 100px;" id="modalStudentAvatar">
+                                    A
+                                </div>
+                            </div>
+                            <h5 class="fw-bold mb-1" id="modalStudentName">Nama Siswa</h5>
+                            <p class="text-muted small mb-4" id="modalStudentNis">NIS: 12345</p>
+                            
+                            <div class="d-grid gap-2 mt-auto">
+                                <button class="btn btn-primary rounded-pill"><i class="bi bi-chat-dots me-2"></i>Kirim Pesan</button>
+                                <button class="btn btn-outline-danger rounded-pill"><i class="bi bi-exclamation-circle me-2"></i>Lapor Masalah</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Content Details -->
+                    <div class="col-md-8">
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="fw-bold mb-0 text-uppercase text-muted small">Detail Siswa</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+
+                            <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-pill" id="studentTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active rounded-pill py-1 small" id="st-stats-tab" data-bs-toggle="tab" data-bs-target="#st-stats" type="button">Statistik</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link rounded-pill py-1 small" id="st-assessment-tab" data-bs-toggle="tab" data-bs-target="#st-assessment" type="button">Penilaian</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link rounded-pill py-1 small" id="st-notes-tab" data-bs-toggle="tab" data-bs-target="#st-notes" type="button">Catatan</button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="studentTabsContent">
+                                <!-- Stats Tab -->
+                                <div class="tab-pane fade show active" id="st-stats" role="tabpanel">
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-6">
+                                            <div class="p-3 border rounded-3 text-center">
+                                                <div class="display-6 fw-bold text-success mb-0">92%</div>
+                                                <div class="small text-muted">Kehadiran</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="p-3 border rounded-3 text-center">
+                                                <div class="display-6 fw-bold text-primary mb-0">88</div>
+                                                <div class="small text-muted">Rata-rata Nilai</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 class="fw-bold small mb-2">Grafik Performa</h6>
+                                    <div class="bg-light rounded h-100 d-flex align-items-end justify-content-between px-3 pb-3 pt-5" style="height: 120px;">
+                                        <!-- Fake Chart Bars -->
+                                        <div class="w-100 bg-primary-subtle rounded-top mx-1" style="height: 40%"></div>
+                                        <div class="w-100 bg-primary-subtle rounded-top mx-1" style="height: 60%"></div>
+                                        <div class="w-100 bg-primary rounded-top mx-1" style="height: 80%"></div>
+                                        <div class="w-100 bg-primary-subtle rounded-top mx-1" style="height: 70%"></div>
+                                        <div class="w-100 bg-primary-subtle rounded-top mx-1" style="height: 50%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Assessment Tab (NEW) -->
+                                <div class="tab-pane fade" id="st-assessment" role="tabpanel">
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label small fw-bold mb-0">Pemahaman Materi</label>
+                                            <span class="small text-primary fw-bold">85/100</span>
+                                        </div>
+                                        <input type="range" class="form-range" min="0" max="100" value="85" id="rangePemahaman">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Sikap & Kedisiplinan</label>
+                                        <select class="form-select form-select-sm">
+                                            <option value="Sangat Baik" selected>Sangat Baik</option>
+                                            <option value="Baik">Baik</option>
+                                            <option value="Cukup">Cukup</option>
+                                            <option value="Kurang">Kurang</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Keaktifan di Kelas</label>
+                                        <div class="d-flex gap-2">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="activeRadio" id="active1" value="1">
+                                                <label class="form-check-label small" for="active1">Pasif</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="activeRadio" id="active2" value="2">
+                                                <label class="form-check-label small" for="active2">Cukup</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="activeRadio" id="active3" value="3" checked>
+                                                <label class="form-check-label small" for="active3">Aktif</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button class="btn btn-sm btn-primary">Simpan Penilaian</button>
+                                    </div>
+                                </div>
+
+                                <!-- Notes Tab -->
+                                <div class="tab-pane fade" id="st-notes" role="tabpanel">
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                                        <label for="floatingTextarea2">Catatan Pribadi untuk Siswa</label>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary">Simpan Catatan</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const viewPrList = document.getElementById('view-pr-list');
-            const viewPrDetail = document.getElementById('view-pr-detail');
-            const btnBackPr = document.getElementById('btn-back-pr');
-            const btnNilaiPr = document.querySelectorAll('.btn-nilai-pr');
-            const prDetailTitle = document.getElementById('pr-detail-title');
-
-            // Show Detail
-            btnNilaiPr.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // In real app, fetch data based on ID
-                    const id = this.getAttribute('data-id');
-                    prDetailTitle.textContent = id === '1' ? 'Penilaian - PR 01' : 'Penilaian - Project Konten IG';
-                    
-                    viewPrList.classList.add('d-none');
-                    viewPrDetail.classList.remove('d-none');
-                });
-            });
-
-            // Back to List
-            btnBackPr.addEventListener('click', function() {
-                viewPrDetail.classList.add('d-none');
-                viewPrList.classList.remove('d-none');
-            });
-        });
-        </script>
     </div>
 </div>
+
+<!-- Modal Detail Absensi (NEW) -->
+<div class="modal fade" id="modalDetailAbsensi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Detail Absensi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="text-muted small mb-3">Pertemuan 4 - Pengenalan Tools Microsoft Word</p>
+                
+                <div class="d-flex gap-2 mb-3 overflow-auto pb-2">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Hadir: 12</span>
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill">Izin: 2</span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Alpha: 1</span>
+                </div>
+
+                <div class="list-group list-group-flush border rounded-3" style="max-height: 300px; overflow-y: auto;">
+                    <?php foreach ($students as $index => $s): ?>
+                    <div class="list-group-item d-flex align-items-center justify-content-between py-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-placeholder rounded-circle bg-light border text-muted fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-size: 12px;">
+                                <?= substr($s['name'], 0, 1) ?>
+                            </div>
+                            <div class="small fw-bold"><?= $s['name'] ?></div>
+                        </div>
+                        <select class="form-select form-select-sm w-auto border-0 bg-light fw-medium py-0" style="height: 28px; font-size: 12px;">
+                            <option value="H" <?= $index < 12 ? 'selected' : '' ?>>Hadir</option>
+                            <option value="I" <?= $index == 12 || $index == 13 ? 'selected' : '' ?>>Izin</option>
+                            <option value="S">Sakit</option>
+                            <option value="A" <?= $index == 14 ? 'selected' : '' ?>>Alpha</option>
+                        </select>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-sm btn-primary">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Pertemuan (NEW) -->
+<div class="modal fade" id="modalTambahPertemuan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Tambah Pertemuan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info border-0 bg-info-subtle text-info-emphasis extra-small mb-3">
+                    <i class="bi bi-info-circle me-1"></i> Pertemuan tambahan bersifat fleksibel dan tidak harus sesuai modul.
+                </div>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Topik Pertemuan</label>
+                        <input type="text" class="form-control" placeholder="Contoh: Pembahasan Kisi-kisi Ujian">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Materi (Deskripsi)</label>
+                        <textarea class="form-control" rows="4" placeholder="Tuliskan materi atau ringkasan pertemuan..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Upload Video</label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" accept="video/*">
+                            <span class="input-group-text bg-light text-muted">atau</span>
+                            <input type="text" class="form-control" placeholder="Link YouTube/Drive">
+                        </div>
+                        <div class="form-text extra-small">Upload file video atau tempel link video pembelajaran.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Upload Dokumen Materi</label>
+                        <input type="file" class="form-control" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                        <div class="form-text extra-small">Format: PDF, Word, atau PowerPoint.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary">Ajukan Pertemuan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Kelola Materi (NEW) -->
+<div class="modal fade" id="modalKelolaMateri" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Kelola Materi Pertemuan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Upload Video Baru</label>
+                        <div class="input-group mb-2">
+                            <input type="file" class="form-control" accept="video/*">
+                            <span class="input-group-text bg-light text-muted">atau</span>
+                            <input type="text" class="form-control" placeholder="Link YouTube/Drive">
+                        </div>
+                        <!-- List Video Existing -->
+                        <div class="bg-light p-2 rounded border">
+                            <div class="d-flex align-items-center justify-content-between small mb-1">
+                                <span><i class="bi bi-play-circle text-primary me-2"></i>Video Tutorial Part 1</span>
+                                <button type="button" class="btn btn-link text-danger p-0" style="font-size: 0.8rem;"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Upload Dokumen Materi Baru</label>
+                        <input type="file" class="form-control mb-2" accept=".pdf,.doc,.docx,.ppt,.pptx">
+                        <!-- List Dokumen Existing -->
+                        <div class="bg-light p-2 rounded border">
+                            <div class="d-flex align-items-center justify-content-between small mb-1">
+                                <span><i class="bi bi-file-pdf text-danger me-2"></i>Modul_Bab_1.pdf</span>
+                                <button type="button" class="btn btn-link text-danger p-0" style="font-size: 0.8rem;"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Selesai</button>
+                <button type="button" class="btn btn-primary">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Tugas (NEW) -->
+<div class="modal fade" id="modalTambahTugas" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Buat Tugas Tambahan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Judul Tugas</label>
+                        <input type="text" class="form-control" placeholder="Contoh: Latihan Mandiri Bab 4">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Deskripsi / Soal</label>
+                        <textarea class="form-control" rows="3" placeholder="Jelaskan detail tugas..."></textarea>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Deadline</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold">Waktu</label>
+                            <input type="time" class="form-control" value="23:59">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Lampiran (Opsional)</label>
+                        <input type="file" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary">Simpan Tugas</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modalStudentAction = document.getElementById('modalStudentAction');
+    if (modalStudentAction) {
+        modalStudentAction.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const name = button.getAttribute('data-name');
+            const nis = button.getAttribute('data-nis');
+            
+            const modalTitle = modalStudentAction.querySelector('#modalStudentName');
+            const modalNis = modalStudentAction.querySelector('#modalStudentNis');
+            const modalAvatar = modalStudentAction.querySelector('#modalStudentAvatar');
+            
+            modalTitle.textContent = name;
+            modalNis.textContent = 'NIS: ' + nis;
+            modalAvatar.textContent = name.charAt(0);
+        });
+    }
+});
+</script>
 
 <?php
 $content = ob_get_clean();
 include __DIR__ . '/../layout.php';
+?>

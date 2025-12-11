@@ -256,9 +256,13 @@ if (current_user()) {
                 <div><span class="role-badge">Admin</span> admin@lpk.test</div>
                 <div class="text-muted">admin123</div>
             </div>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mb-2">
                 <div><span class="role-badge">Tutor</span> tutor@lpk.test</div>
                 <div class="text-muted">tutor123</div>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <div><span class="role-badge">Peserta</span> peserta@lpk.test</div>
+                <div class="text-muted">peserta123</div>
             </div>
         </div>
         

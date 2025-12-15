@@ -9,21 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (attempt_login($email, $password)) {
         $user = current_user();
-        switch ($user['role']) {
-            case 'superadmin':
-                header('Location: /siakad/superadmin/index.php');
-                break;
-            case 'admin':
-                header('Location: /siakad/admin/index.php');
-                break;
-            case 'tutor':
-                header('Location: /siakad/tutor/index.php');
-                break;
-            case 'peserta':
-                header('Location: /siakad/peserta/index.php');
-                break;
-            default:
-                header('Location: /siakad/index.php');
+        if ($user['role'] === 'superadmin') {
+            header('Location: /siakad/superadmin/index.php');
+        } else {
+            // Admin, Tutor, Peserta ke Portal Modul
+            header('Location: /siakad/portal.php');
         }
         exit;
     } else {
@@ -40,7 +30,7 @@ if (current_user()) {
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Masuk - SIAKAD LPK</title>
+    <title>Masuk - LMS DEPATI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -254,8 +244,8 @@ if (current_user()) {
             
             <div class="visual-content">
                 <div>
-                    <h3 class="fw-bold mb-2"><i class="bi bi-mortarboard-fill me-2"></i>SIAKAD LPK</h3>
-                    <p class="text-white-50">Sistem Informasi Akademik Terintegrasi</p>
+                    <h3 class="fw-bold mb-2"><i class="bi bi-mortarboard-fill me-2"></i>LMS DEPATI</h3>
+                    <p class="text-white-50">Learning Management System Terintegrasi</p>
                 </div>
                 
                 <div class="glass-card mb-5">
@@ -289,7 +279,7 @@ if (current_user()) {
                     <div class="brand-icon mx-auto mb-3">
                         <i class="bi bi-mortarboard-fill"></i>
                     </div>
-                    <h3 class="fw-bold">SIAKAD LPK</h3>
+                    <h3 class="fw-bold">LMS DEPATI</h3>
                 </div>
 
                 <div class="mb-5">

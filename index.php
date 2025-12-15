@@ -7,20 +7,12 @@ if (!$user) {
     exit;
 }
 
-switch ($user['role']) {
-    case 'superadmin':
-        header('Location: /siakad/superadmin/index.php');
-        break;
-    case 'admin':
-        header('Location: /siakad/admin/index.php');
-        break;
-    case 'tutor':
-        header('Location: /siakad/tutor/index.php');
-        break;
-    case 'peserta':
-        header('Location: /siakad/peserta/index.php');
-        break;
-    default:
-        echo "Role tidak dikenali.";
+// Jika Superadmin, langsung ke dashboard khususnya (Master Control)
+if ($user['role'] === 'superadmin') {
+    header('Location: /siakad/superadmin/index.php');
+    exit;
 }
+
+// Untuk role lain (Admin, Tutor, Peserta), masuk ke Portal Modul LMS
+header('Location: /siakad/portal.php');
 exit;

@@ -56,6 +56,10 @@ $baseUrl      = '/siakad';
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
+                    <a href="<?= $baseUrl ?>/portal.php" class="btn btn-primary btn-sm rounded-pill d-none d-md-inline-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-grid-fill"></i> Ganti Modul
+                    </a>
+
                     <div class="text-end d-none d-sm-block">
                         <div class="small text-muted">Login sebagai</div>
                         <div class="fw-semibold"><?= htmlspecialchars($user['name']) ?></div>
